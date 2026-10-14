@@ -1,0 +1,6 @@
+data/
+output/run_log.json
+__pycache__/
+.pytest_cache/
+*.pyc
+.env

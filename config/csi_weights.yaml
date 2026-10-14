@@ -1,0 +1,15 @@
+# Credit-stress index weights.
+# Fixed BEFORE looking at any election outcome so they cannot be tuned to the answer.
+# Positive weight = a higher value means more household stress.
+# A weight of 0 keeps the component in the data but out of the index.
+min_history_quarters: 8
+clip: 4.0
+components:
+  card_early_delinquency: 1.0
+  auto_early_delinquency: 1.0
+  mortgage_serious_delinquency_flow: 1.0
+  card_utilization: 0.5
+  bankruptcy_filings_per_capita: 0.5
+  # Reported as a separate sub-score: the series is distorted by the re-reporting
+  # of defaulted student debt (NY Fed, Q2 2026 release).
+  student_loan_delinquency: 0.0

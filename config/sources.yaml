@@ -1,0 +1,100 @@
+# Source registry. One block per ingest module (names match pipelines/registry.py).
+# status: "verified" = layout/URL checked against a live file; "unverified" = built from
+# documentation or memory and must be confirmed on the first live run.
+# Terms: use published data with attribution; confirm redistribution terms before
+# republishing any figure. Nothing from licensed products or client work.
+
+sources:
+  fred_state:
+    enabled: true
+    description: State unemployment rate and FHFA house price index from FRED
+    url: https://fred.stlouisfed.org/docs/api/fred/series_observations.html
+    cadence: monthly (unemployment), quarterly (house prices)
+    geography: state
+    history: ~1976 on (unemployment), ~1975 on (house prices)
+    access: free API key in env var FRED_API_KEY
+    terms: FRED terms of use; cite FRED, BLS and FHFA
+    status: unverified
+    observation_start: "1976-01-01"
+    realtime_vintage: false   # set true to request series as known on the vintage date (ALFRED)
+
+  nyfed_hhdc:
+    enabled: true
+    description: NY Fed Household Debt and Credit, state-level balances and delinquency flows
+    url: https://www.newyorkfed.org/microeconomics/hhdc
+    cadence: quarterly (Q2 2026 released 2026-08-11)
+    geography: national and state (confirm granularity on first file)
+    history: Q1 2003 on
+    access: free download
+    terms: NY Fed terms of use; cite NY Fed Consumer Credit Panel / Equifax
+    status: unverified
+    # Direct download is attempted first, then data/inbox/nyfed_hhdc/. Confirm both.
+    url_template: "https://www.newyorkfed.org/medialibrary/interactives/householdcredit/data/xls/HHD_C_Report_{year}Q{q}.xlsx"
+    sheet: 0
+    header_row: 0
+    state_col: state
+    period_col: period
+    # PLACEHOLDER: map the file's real column names to our metric names after inspecting it.
+    column_map:
+      card_90plus_flow: card_serious_delinquency_flow
+      auto_90plus_flow: auto_serious_delinquency_flow
+      mortgage_90plus_flow: mortgage_serious_delinquency_flow
+      card_30plus_flow: card_early_delinquency
+      auto_30plus_flow: auto_early_delinquency
+
+  fec:
+    enabled: true
+    description: FEC candidate summary (receipts, disbursements, cash on hand) by cycle
+    url: https://www.fec.gov/data/browse-data/?tab=bulk-data
+    cadence: updated through the cycle
+    geography: candidate, state, district
+    history: clean from ~2000
+    access: free bulk files
+    terms: public domain, but FEC bars using contributor data for solicitation
+    status: unverified
+    cycles: [2026, 2024, 2022, 2020, 2018]
+
+  mit_results:
+    enabled: true
+    description: MIT Election Lab certified House, Senate and presidential results
+    url: https://electionlab.mit.edu/data
+    cadence: after certification
+    geography: state, district
+    history: 1976 on
+    access: free; download from Harvard Dataverse into data/inbox/mit_results/
+    terms: cite MIT Election Data and Science Lab
+    status: unverified
+    dataverse_dois:   # confirm on the Dataverse site
+      house: doi:10.7910/DVN/IG0UN2
+      senate: doi:10.7910/DVN/PEJ5QU
+      president: doi:10.7910/DVN/42MVDX
+
+  generic_ballot:
+    enabled: true
+    description: Every generic congressional ballot poll in the Silver Bulletin database
+    url: https://www.natesilver.net/generic-ballot-average-2026-nate-silver-bulletin-congress-polls
+    cadence: near daily in season
+    geography: national
+    history: 1994 on
+    access: free download from the page into data/inbox/generic_ballot/
+    terms: cite Silver Bulletin; confirm reuse terms
+    status: unverified
+    # ours: theirs. PLACEHOLDER names until the real file is inspected.
+    column_map:
+      pollster: pollster
+      end_date: end_date
+      population: population
+      dem: dem
+      rep: rep
+
+  bureau_public:
+    enabled: true
+    description: Published state-level credit statistics from TransUnion, Equifax, Experian
+    url: https://newsroom.transunion.com/
+    cadence: quarterly or irregular
+    geography: varies (national, state, metro)
+    history: varies by report
+    access: published reports; tables transcribed to curated CSV in data/inbox/bureau_public/
+    terms: published releases only, with attribution; check each bureau's terms
+    status: unverified
+    documents: []   # add {url:, filename:} entries for report pages or PDFs to archive
